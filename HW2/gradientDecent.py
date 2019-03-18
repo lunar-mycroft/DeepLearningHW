@@ -8,6 +8,19 @@ def gradDecent(gradFunc,learningRate,start,limit=1000000):
         y -= dy*learningRate
     return x, y
 
+def optimizeLearningRate(func,gradFunc,start,innerLearn,learning,innerLimit=1000000,limit=1000000):
+    for i in range(0,limit):
+        x1, y1 = gradDecent(gradFunc,innerLearn,start,limit=innerLimit)
+        val1 = func(x1,y1)
+
+        testRate=innerLearn+learning
+
+        x2, y2 = gradDecent(gradFunc,testRate,start,limit=innerLimit)
+        val2 = func(x2,y2)
+
+        innerLearn -= learning*(val2-val1)
+    return innerLearn
+
 if __name__ == "__main__":
     f = lambda x, y : (10*x)**2 + (y + 2)**2
     gradF = lambda x, y : (200*x, 2*(y+2))
@@ -27,3 +40,13 @@ if __name__ == "__main__":
         resG[1],
         g(resG[0],resG[1])
     ))
+    
+    resLearning = optimizeLearningRate(
+        g,
+        gradG,
+        (0,0),
+        0.005,
+        0.0001,
+        10,
+        10000
+    )
